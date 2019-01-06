@@ -17,6 +17,7 @@ resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-env" {
   #apply tag and its default value policy definition
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498"
   display_name         = "Apply Environment tag and ${var.env_name} as its default value"
+  depends_on = ["azurerm_management_lock.itds_subs_lk"]
   parameters = <<PARAMETERS
   {
     "tagName" : {
@@ -35,6 +36,7 @@ resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-grp" {
   #apply tag and its default value policy definition
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498"
   display_name         = "Apply Environment tag and ${var.env_group} as its default value"
+  depends_on = ["azurerm_management_lock.itds_subs_lk"]
   parameters = <<PARAMETERS
   {
     "tagName" : {
@@ -53,6 +55,7 @@ resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-admins" {
   #apply tag and its default value policy definition
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498"
   display_name         = "Apply Environment tag and ${var.env_admins} as its default value"
+  depends_on = ["azurerm_management_lock.itds_subs_lk"]
   parameters = <<PARAMETERS
   {
     "tagName" : {
@@ -71,7 +74,8 @@ resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-allwd-loc" {
   scope                = "${data.azurerm_subscription.current.id}"
   #apply tag and its default value policy definition
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c"
-  display_name         = "Restrict region for all resources to ${var.env_location}"
+  display_name         = "Restrict location for all resources to ${var.env_location}"
+  depends_on = ["azurerm_management_lock.itds_subs_lk"]
   parameters = <<PARAMETERS
   {
     "listOfAllowedLocations": {
@@ -84,4 +88,5 @@ resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-allwd-loc" {
 resource "azurerm_resource_group" "itds_subs_rg" {
   name     = "${var.subs_rg_nm}"
   location = "${var.env_location}"
+  depends_on = ["azurerm_management_lock.itds_subs_lk"]
 }
