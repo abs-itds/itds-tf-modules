@@ -3,16 +3,16 @@ terraform {
 }
 data "azurerm_subscription" "current" {}
 
-resource "azurerm_management_lock" "${var.subscription_name}-subs-lk" {
-  name       = "${var.subscription_name}-subscription-lock"
+resource "azurerm_management_lock" "itds_subs_lk" {
+  name       = "${var.subs_lk_name}"
   scope      = "${data.azurerm_subscription.current.id}"
   lock_level = "CanNotDelete"
-  notes      = "${var.subscription_name} subscription can not be deleted"
+  notes      = "${data.azurerm_subscription.current.name} subscription can not be deleted"
 }
 
 #Azure Policy Assignments
-resource "azurerm_policy_assignment" "tag-plcy-asgn-env" {
-  name                 = "${var.env_prefix}-tag-plcy-asgn-env"
+resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-env" {
+  name                 = "${var.subs_tag_plcy_asgn_env_nm}"
   scope                = "${data.azurerm_subscription.current.id}"
   #apply tag and its default value policy definition
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498"
@@ -29,8 +29,8 @@ resource "azurerm_policy_assignment" "tag-plcy-asgn-env" {
   PARAMETERS
 }
 
-resource "azurerm_policy_assignment" "tag-plcy-asgn-grp" {
-  name                 = "${var.env_prefix}-tag-plcy-asgn-grp"
+resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-grp" {
+  name                 = "${var.subs_tag_plcy_asgn_grp_nm}"
   scope                = "${data.azurerm_subscription.current.id}"
   #apply tag and its default value policy definition
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498"
@@ -47,8 +47,8 @@ resource "azurerm_policy_assignment" "tag-plcy-asgn-grp" {
   PARAMETERS
 }
 
-resource "azurerm_policy_assignment" "tag-plcy-asgn-admins" {
-  name                 = "${var.env_prefix}-tag-plcy-asgn-admins"
+resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-admins" {
+  name                 = "${var.subs_tag_plcy_asgn_admins_nm}"
   scope                = "${data.azurerm_subscription.current.id}"
   #apply tag and its default value policy definition
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498"
@@ -66,8 +66,8 @@ resource "azurerm_policy_assignment" "tag-plcy-asgn-admins" {
 }
 
 
-resource "azurerm_policy_assignment" "tag-plcy-asgn-allwd-loc" {
-  name                 = "${var.env_prefix}-tag-plcy-asgn-allwd-loc"
+resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-allwd-loc" {
+  name                 = "${var.subs_tag_plcy_asgn_allwd_loc_nm}"
   scope                = "${data.azurerm_subscription.current.id}"
   #apply tag and its default value policy definition
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498"
@@ -81,7 +81,7 @@ resource "azurerm_policy_assignment" "tag-plcy-asgn-allwd-loc" {
   PARAMETERS
 }
 
-resource "azurerm_resource_group" "${var.env_prefix}-rg" {
-  name     = "${var.env_prefix}-rg"
+resource "azurerm_resource_group" "itds_subs_rg" {
+  name     = "${var.subs_rg_nm}"
   location = "${var.env_location}"
 }

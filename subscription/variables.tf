@@ -8,6 +8,14 @@ variable "env_admins" {}
 
 variable "env_prefix" {}
 
-variable "subscription_id" {}
+variable "subs_lk_name" {}
 
-variable "subscription_name" {}
+variable "subs_tag_plcy_asgn_env_nm" {}
+
+variable "subs_tag_plcy_asgn_grp_nm" {}
+
+variable "subs_tag_plcy_asgn_admins_nm" {}
+
+variable "subs_tag_plcy_asgn_allwd_loc_nm" {}
+
+variable "subs_rg_nm" {}
