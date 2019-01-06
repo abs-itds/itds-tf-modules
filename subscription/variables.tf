@@ -6,8 +6,6 @@ variable "env_group" {}
 
 variable "env_admins" {}
 
-variable "env_prefix" {}
-
 variable "subs_lk_name" {}
 
 variable "subs_tag_plcy_asgn_env_nm" {}
