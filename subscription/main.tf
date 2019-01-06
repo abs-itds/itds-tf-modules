@@ -70,7 +70,7 @@ resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-allwd-loc" {
   name                 = "${var.subs_tag_plcy_asgn_allwd_loc_nm}"
   scope                = "${data.azurerm_subscription.current.id}"
   #apply tag and its default value policy definition
-  policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498"
+  policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c"
   display_name         = "Restrict region for all resources to ${var.env_location}"
   parameters = <<PARAMETERS
   {
