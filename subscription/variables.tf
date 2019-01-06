@@ -6,14 +6,14 @@ variable "env_group" {}
 
 variable "env_admins" {}
 
-variable "subs_lk_name" {}
+variable "subs_lk" {}
 
-variable "subs_tag_plcy_asgn_env_nm" {}
+variable "subs_env_tag" {}
 
-variable "subs_tag_plcy_asgn_grp_nm" {}
+variable "subs_grp_tag" {}
 
-variable "subs_tag_plcy_asgn_admins_nm" {}
+variable "subs_adms_tag" {}
 
-variable "subs_tag_plcy_asgn_allwd_loc_nm" {}
+variable "subs_allwd_loc_tag" {}
 
-variable "subs_rg_nm" {}
+variable "subs_rg" {}
