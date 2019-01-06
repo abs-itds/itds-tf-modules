@@ -74,7 +74,7 @@ resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-allwd-loc" {
   display_name         = "Restrict region for all resources to ${var.env_location}"
   parameters = <<PARAMETERS
   {
-    "allowedLocations": {
+    "listOfAllowedLocations": {
       "value": [ "${var.env_location}" ]
     }
   }
