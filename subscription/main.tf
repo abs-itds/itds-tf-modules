@@ -1,3 +1,6 @@
+terraform {
+  backend "azurerm" {}
+}
 data "azurerm_subscription" "current" {}
 
 resource "azurerm_management_lock" "${var.subscription_name}-subs-lk" {

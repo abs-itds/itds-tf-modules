@@ -1,3 +1,6 @@
+terraform {
+  backend "azurerm" {}
+}
 data "azurerm_subscription" "current" {}
 
 data "azurerm_virtual_network" "itds_tf_vnet" {
