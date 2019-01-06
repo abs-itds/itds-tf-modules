@@ -113,7 +113,7 @@ resource "azurerm_redis_cache" "itds_shrd_srv_rdis" {
   redis_configuration {
     #There's a bug in the Redis API where the original storage connection string isn't being returned,
     #Track bug https://github.com/Azure/azure-rest-api-specs/issues/3037
-    ignore_changes = ["redis_configuration.0.rdb_storage_connection_string"]
+    #ignore_changes = ["redis_configuration.0.rdb_storage_connection_string"]
     maxmemory_policy   = "volatile-lru"
   }
 }
