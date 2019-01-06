@@ -99,42 +99,6 @@ resource "azurerm_resource_group" "itds_shrd_srv_rdis_rg" {
   location = "${var.env_location}"
 }
 
-resource "azurerm_network_security_group" "itds_shrd_srv_rdis_nsg" {
-  name                = "${var.shrd_srv_rdis_nsg}"
-  resource_group_name = "${azurerm_resource_group.itds_shrd_srv_rdis_rg.name}"
-  location = "${var.env_location}"
-
-  security_rule {
-    name                       = "port_22"
-    priority                   = 100
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "22"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-}
-
-resource "azurerm_subnet" "itds_shrd_srv_rdis_snet" {
-  name                 = "${var.shrd_srv_rdis_snet}"
-  virtual_network_name = "${var.vnet_name}"
-  resource_group_name  = "${var.vnet_rg_name}"
-  address_prefix = "${var.shrd_srv_rdis_snet_addr_pfx}"
-  network_security_group_id = "${azurerm_network_security_group.itds_shrd_srv_rdis_nsg.id}"
-
-}
-
-resource "azurerm_subnet_network_security_group_association" "itds_shrd_srv_rdis_snet_nsg_asso" {
-  subnet_id                 = "${azurerm_subnet.itds_shrd_srv_rdis_snet.id}"
-  network_security_group_id = "${azurerm_network_security_group.itds_shrd_srv_rdis_nsg.id}"
-}
-
-
-
-
 resource "azurerm_redis_cache" "itds_shrd_srv_rdis" {
   name                = "${var.shrd_srv_rdis}"
   location            = "${azurerm_resource_group.itds_shrd_srv_rdis_rg.location}"
@@ -144,12 +108,7 @@ resource "azurerm_redis_cache" "itds_shrd_srv_rdis" {
   family              = "C"
   sku_name            = "Basic"
   enable_non_ssl_port = false
-  private_static_ip_address = "${var.shrd_srv_rdis_pvt_stat_addr}"
-  subnet_id           = "${azurerm_subnet.itds_shrd_srv_rdis_snet.id}"
   redis_configuration {
-    #There's a bug in the Redis API where the original storage connection string isn't being returned,
-    #Track bug https://github.com/Azure/azure-rest-api-specs/issues/3037
-    #ignore_changes = ["redis_configuration.0.rdb_storage_connection_string"]
     maxmemory_policy   = "volatile-lru"
   }
 }
@@ -191,7 +150,6 @@ resource "azurerm_mysql_server" "itds_shrd_srv_msql" {
   }
 }
 
-
 resource "azurerm_mysql_firewall_rule" "itds_shrd_srv_msql_fwall_rl" {
   name                = "${var.shrd_srv_msql_fwall_rl}"
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_msql_rg.name}"
@@ -199,19 +157,3 @@ resource "azurerm_mysql_firewall_rule" "itds_shrd_srv_msql_fwall_rl" {
   start_ip_address    = "${var.vnet_start_ip}"
   end_ip_address      = "${var.vnet_end_ip}"
 }
-
-
-#Once all Subnets are defined then add following rules to specify what we can access
-/*
-data "azurerm_subnet" "itds_shrd_srv_rdis_fwall_rl" {
-  name = ""
-  resource_group_name = ""
-  virtual_network_name = ""
-}
-resource "azurerm_mysql_virtual_network_rule" "itds_shrd_srv_msql_vnet_rl" {
-  name                = "mysql-vnet-rule"
-  resource_group_name = "${azurerm_resource_group.itds_shrd_srv_msql_rg.name}"
-  server_name         = "${azurerm_mysql_server.itds_shrd_srv_msql.name}"
-  subnet_id           = "${azurerm_subnet.itds_shrd_srv_msql_snet.id}"
-}
-*/
