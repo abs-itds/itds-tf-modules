@@ -5,7 +5,7 @@ terraform {
 data "azurerm_subscription" "current" {}
 
 resource "azurerm_management_lock" "itds_subs_lk" {
-  name       = "${var.subs_lk}"
+  name       = "${var.env_prefix_hypon}-subs-lk"
   scope      = "${data.azurerm_subscription.current.id}"
   lock_level = "CanNotDelete"
   notes      = "${data.azurerm_subscription.current.display_name} subscription can not be deleted"
@@ -13,7 +13,7 @@ resource "azurerm_management_lock" "itds_subs_lk" {
 
 #Azure Policy Assignments
 resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-env" {
-  name                 = "${var.subs_env_tag}"
+  name                 = "${var.env_prefix_hypon}--subs-env-tg"
   scope                = "${data.azurerm_subscription.current.id}"
   #apply tag and its default value policy definition
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498"
@@ -32,7 +32,7 @@ resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-env" {
 }
 
 resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-grp" {
-  name                 = "${var.subs_grp_tag}"
+  name                 = "${var.env_prefix_hypon}-subs-grp-tg"
   scope                = "${data.azurerm_subscription.current.id}"
   #apply tag and its default value policy definition
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498"
@@ -51,7 +51,7 @@ resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-grp" {
 }
 
 resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-admins" {
-  name                 = "${var.subs_adms_tag}"
+  name                 = "${var.env_prefix_hypon}-subs-adms-tg"
   scope                = "${data.azurerm_subscription.current.id}"
   #apply tag and its default value policy definition
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498"
@@ -71,7 +71,7 @@ resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-admins" {
 
 
 resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-allwd-loc" {
-  name                 = "${var.subs_allwd_loc_tag}"
+  name                 = "${var.env_prefix_hypon}-subs-allwd-loc-tg"
   scope                = "${data.azurerm_subscription.current.id}"
   #apply tag and its default value policy definition
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c"
