@@ -1,3 +1,9 @@
+terraform {
+  backend "azurerm" {}
+}
+
+data "azurerm_subscription" "current" {}
+
 resource "azurerm_resource_group" "itds_shrd_srv_hue_rg" {
   name = "${var.env_prefix_hypon}-shrd-srv-hue-rg"
   location = "${var.env_location}"

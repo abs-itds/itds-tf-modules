@@ -16,6 +16,10 @@ variable "vnet_end_ip" {}
 
 variable "vnet_address_space" {}
 
+variable "shrd_srv_jnkns_nd_adm"{}
+
+variable "shrd_srv_jnkns_nd_pswd" {}
+
 variable "shrd_srv_jnkns_snet_addr_pfx" {}
 
 variable "shrd_srv_jnkns_nd_01_stat_ip_addr" {}
@@ -23,7 +27,3 @@ variable "shrd_srv_jnkns_nd_01_stat_ip_addr" {}
 variable "shrd_srv_jnkns_nd_02_stat_ip_addr" {}
 
 variable "shrd_srv_jnkns_nd_03_stat_ip_addr" {}
-
-variable "shrd_srv_jnkns_nd_adm"{}
-
-variable "shrd_srv_jnkns_nd_pswd" {}

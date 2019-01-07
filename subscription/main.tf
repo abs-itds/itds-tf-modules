@@ -1,6 +1,7 @@
 terraform {
   backend "azurerm" {}
 }
+
 data "azurerm_subscription" "current" {}
 
 resource "azurerm_management_lock" "itds_subs_lk" {
