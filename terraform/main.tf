@@ -28,7 +28,6 @@ resource "azurerm_storage_account" "itds_tf_sa" {
   account_tier             = "Standard"
   account_replication_type = "GRS"
  /* network_rules {
-    ip_rules                   = ["127.0.0.1"]
     virtual_network_subnet_ids = ["${azurerm_subnet.itds_tf_snet.id}"]
   }*/
   tags {
