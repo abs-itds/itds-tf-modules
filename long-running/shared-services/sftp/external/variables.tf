@@ -25,3 +25,5 @@ variable "shrd_srv_xsftp_nd_03_stat_ip_addr" {}
 variable "shrd_srv_xsftp_nd_adm"{}
 
 variable "shrd_srv_xsftp_nd_pswd" {}
+
+variable "shrd-srv-xsftp-nd-vm-sz" {}

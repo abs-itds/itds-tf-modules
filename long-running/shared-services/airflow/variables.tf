@@ -26,3 +26,5 @@ variable "shrd_srv_arflw_nd_02_stat_ip_addr" {}
 
 variable "shrd_srv_arflw_nd_03_stat_ip_addr" {}
 
+variable "shrd-srv-arflw-nd-vm-sz" {}
+

@@ -88,7 +88,7 @@ resource "azurerm_network_interface" "itds_shrd_srv_jnkns_nd_01_nic" {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "itds_shrd_srv_jnkns_nd_01_nic_lb_addr_pl_asso" {
-  ip-configuration-name = "${var.env_prefix_hypon}-shrd-srv-jnkns-nic-lb-addr-pl-asso"
+  ip_configuration_name = "${var.env_prefix_hypon}-shrd-srv-jnkns-nic-lb-addr-pl-asso"
   network_interface_id = "${azurerm_network_interface.itds_shrd_srv_jnkns_nd_01_nic.id}"
   backend_address_pool_id = "${azurerm_lb_backend_address_pool.itds_shrd_srv_jnkns_lb_addr_pl.id}"
 }
@@ -158,7 +158,7 @@ resource "azurerm_virtual_machine_extension" "itds_shrd_srv_jnkns_nd_01_vm_ext" 
 
   settings = <<SETTINGS
     {
-        "commandToExecute": "sudo apt-get update && sudo apt-get install docker-ce  "
+        "commandToExecute": "hostname && uptime"
     }
 SETTINGS
 }
@@ -180,7 +180,7 @@ resource "azurerm_network_interface" "itds_shrd_srv_jnkns_nd_02_nic" {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "itds_shrd_srv_jnkns_nd_02_nic_lb_addr_pl_asso" {
-  ip-configuration-name = "${var.env_prefix_hypon}-shrd-srv-jnkns-nic-lb-addr-pl-asso"
+  ip_configuration_name = "${var.env_prefix_hypon}-shrd-srv-jnkns-nic-lb-addr-pl-asso"
   network_interface_id = "${azurerm_network_interface.itds_shrd_srv_jnkns_nd_02_nic.id}"
   backend_address_pool_id = "${azurerm_lb_backend_address_pool.itds_shrd_srv_jnkns_lb_addr_pl.id}"
 }
@@ -250,7 +250,7 @@ resource "azurerm_virtual_machine_extension" "itds_shrd_srv_jnkns_nd_02_vm_ext" 
 
   settings = <<SETTINGS
     {
-        "commandToExecute": "sudo apt-get update && sudo apt-get install docker-ce  "
+        "commandToExecute": "hostname && uptime"
     }
 SETTINGS
 }
@@ -270,7 +270,7 @@ resource "azurerm_network_interface" "itds_shrd_srv_jnkns_nd_03_nic" {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "itds_shrd_srv_jnkns_nd_03_nic_lb_addr_pl_asso" {
-  ip-configuration-name = "${var.env_prefix_hypon}-shrd-srv-jnkns-nic-lb-addr-pl-asso"
+  ip_configuration_name = "${var.env_prefix_hypon}-shrd-srv-jnkns-nic-lb-addr-pl-asso"
   network_interface_id = "${azurerm_network_interface.itds_shrd_srv_jnkns_nd_03_nic.id}"
   backend_address_pool_id = "${azurerm_lb_backend_address_pool.itds_shrd_srv_jnkns_lb_addr_pl.id}"
 }
@@ -339,7 +339,7 @@ resource "azurerm_virtual_machine_extension" "itds_shrd_srv_jnkns_nd_03_vm_ext" 
 
   settings = <<SETTINGS
     {
-        "commandToExecute": "sudo apt-get update && sudo apt-get install docker-ce  "
+        "commandToExecute": "hostname && uptime"
     }
 SETTINGS
 }

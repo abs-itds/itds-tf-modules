@@ -25,3 +25,5 @@ variable "shrd_srv_isftp_nd_03_stat_ip_addr" {}
 variable "shrd_srv_isftp_nd_adm"{}
 
 variable "shrd_srv_isftp_nd_pswd" {}
+
+variable "shrd-srv-isftp-nd-vm-sz" {}

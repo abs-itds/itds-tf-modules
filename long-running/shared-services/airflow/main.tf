@@ -15,13 +15,13 @@ resource "azurerm_network_security_group" "itds_shrd_srv_arflw_nsg" {
   location = "${azurerm_resource_group.itds_shrd_srv_arflw_rg.location}"
 
   security_rule {
-    name = "port_22"
+    name = "port_any"
     priority = 100
     direction = "Inbound"
     access = "Allow"
     protocol = "Tcp"
     source_port_range = "*"
-    destination_port_range = "22"
+    destination_port_range = "*"
     source_address_prefix = "${var.vnet_address_space}"
     destination_address_prefix = "*"
   }
@@ -54,7 +54,7 @@ resource "azurerm_lb" "itds_shrd_srv_arflw_lb" {
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_arflw_rg.name}"
 
   frontend_ip_configuration {
-    name = "${var.env_prefix_hypon}-shrd-srv-arflw-lb-pip}"
+    name = "${var.env_prefix_hypon}-shrd-srv-arflw-lb-pip"
     public_ip_address_id = "${azurerm_public_ip.itds_shrd_srv_arflw_pip.id}"
   }
 }
@@ -88,7 +88,7 @@ resource "azurerm_network_interface" "itds_shrd_srv_arflw_nd_01_nic" {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "itds_shrd_srv_arflw_nd_01_nic_lb_addr_pl_asso" {
-  ip-configuration-name = "${var.env_prefix_hypon}-shrd-srv-arflw-nic-lb-addr-pl-asso"
+  ip_configuration_name = "${var.env_prefix_hypon}-shrd-srv-arflw-nd-01-ip-conf"
   network_interface_id = "${azurerm_network_interface.itds_shrd_srv_arflw_nd_01_nic.id}"
   backend_address_pool_id = "${azurerm_lb_backend_address_pool.itds_shrd_srv_arflw_lb_addr_pl.id}"
 }
@@ -100,7 +100,7 @@ resource "azurerm_virtual_machine" "itds_shrd_srv_arflw_nd_01_vm" {
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_arflw_rg.name}"
   network_interface_ids = [
     "${azurerm_network_interface.itds_shrd_srv_arflw_nd_01_nic.id}"]
-  vm_size = "Standard_F2"
+  vm_size = "${var.shrd-srv-arflw-nd-vm-sz}"
   availability_set_id = "${azurerm_availability_set.itds_shrd_srv_arflw_aset.id}"
   delete_os_disk_on_termination = true
 
@@ -119,7 +119,7 @@ resource "azurerm_virtual_machine" "itds_shrd_srv_arflw_nd_01_vm" {
   }
 
   os_profile {
-    computer_name = "${var.env_prefix_underscore}_shrd_srv_arflw_nd_01_vm"
+    computer_name = "${var.env_prefix_hypon}-shrd-srv-arflw-nd-01-vm"
     admin_username = "${var.shrd_srv_arflw_nd_adm}"
     admin_password = "${var.shrd_srv_arflw_nd_pswd}"
     #custom_data = ""
@@ -158,7 +158,7 @@ resource "azurerm_virtual_machine_extension" "itds_shrd_srv_arflw_nd_01_vm_ext" 
 
   settings = <<SETTINGS
     {
-        "commandToExecute": "sudo apt-get update && sudo apt-get install docker-ce  "
+        "commandToExecute": "hostname && uptime"
     }
 SETTINGS
 }
@@ -180,7 +180,7 @@ resource "azurerm_network_interface" "itds_shrd_srv_arflw_nd_02_nic" {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "itds_shrd_srv_arflw_nd_02_nic_lb_addr_pl_asso" {
-  ip-configuration-name = "${var.env_prefix_hypon}-shrd-srv-arflw-nic-lb-addr-pl-asso"
+  ip_configuration_name = "${var.env_prefix_hypon}_shrd_srv_arflw_nd_02_ip_conf"
   network_interface_id = "${azurerm_network_interface.itds_shrd_srv_arflw_nd_02_nic.id}"
   backend_address_pool_id = "${azurerm_lb_backend_address_pool.itds_shrd_srv_arflw_lb_addr_pl.id}"
 }
@@ -192,7 +192,7 @@ resource "azurerm_virtual_machine" "itds_shrd_srv_arflw_nd_02_vm" {
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_arflw_rg.name}"
   network_interface_ids = [
     "${azurerm_network_interface.itds_shrd_srv_arflw_nd_02_nic.id}"]
-  vm_size = "Standard_F2"
+  vm_size = "${var.shrd-srv-arflw-nd-vm-sz}"
   availability_set_id = "${azurerm_availability_set.itds_shrd_srv_arflw_aset.id}"
   delete_os_disk_on_termination = true
 
@@ -211,7 +211,7 @@ resource "azurerm_virtual_machine" "itds_shrd_srv_arflw_nd_02_vm" {
   }
 
   os_profile {
-    computer_name = "${var.env_prefix_underscore}_shrd_srv_arflw_nd_02_vm"
+    computer_name = "${var.env_prefix_hypon}-shrd-srv-arflw-nd-01-vm"
     admin_username = "${var.shrd_srv_arflw_nd_adm}"
     admin_password = "${var.shrd_srv_arflw_nd_pswd}"
     #custom_data = ""
@@ -250,7 +250,7 @@ resource "azurerm_virtual_machine_extension" "itds_shrd_srv_arflw_nd_02_vm_ext" 
 
   settings = <<SETTINGS
     {
-        "commandToExecute": "sudo apt-get update && sudo apt-get install docker-ce  "
+        "commandToExecute": "hostname && uptime"
     }
 SETTINGS
 }
@@ -270,7 +270,7 @@ resource "azurerm_network_interface" "itds_shrd_srv_arflw_nd_03_nic" {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "itds_shrd_srv_arflw_nd_03_nic_lb_addr_pl_asso" {
-  ip-configuration-name = "${var.env_prefix_hypon}-shrd-srv-arflw-nic-lb-addr-pl-asso"
+  ip_configuration_name = "${var.env_prefix_hypon}-shrd-srv-arflw-nd-03-ip-conf"
   network_interface_id = "${azurerm_network_interface.itds_shrd_srv_arflw_nd_03_nic.id}"
   backend_address_pool_id = "${azurerm_lb_backend_address_pool.itds_shrd_srv_arflw_lb_addr_pl.id}"
 }
@@ -282,7 +282,7 @@ resource "azurerm_virtual_machine" "itds_shrd_srv_arflw_nd_03_vm" {
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_arflw_rg.name}"
   network_interface_ids = [
     "${azurerm_network_interface.itds_shrd_srv_arflw_nd_03_nic.id}"]
-  vm_size = "Standard_F2"
+  vm_size = "${var.shrd-srv-arflw-nd-vm-sz}"
   availability_set_id = "${azurerm_availability_set.itds_shrd_srv_arflw_aset.id}"
   delete_os_disk_on_termination = true
 
@@ -301,7 +301,7 @@ resource "azurerm_virtual_machine" "itds_shrd_srv_arflw_nd_03_vm" {
   }
 
   os_profile {
-    computer_name = "${var.env_prefix_underscore}_shrd_srv_arflw_nd_03_vm"
+    computer_name = "${var.env_prefix_hypon}-shrd-srv-arflw-nd-03-vm"
     admin_username = "${var.shrd_srv_arflw_nd_adm}"
     admin_password = "${var.shrd_srv_arflw_nd_pswd}"
     #custom_data = ""
@@ -316,7 +316,7 @@ resource "azurerm_managed_disk" "itds_shrd_srv_arflw_nd_03_dsk_01" {
   name = "${var.env_prefix_hypon}-shrd-srv-arflw-nd-03-dsk-01"
   location = "${azurerm_resource_group.itds_shrd_srv_arflw_rg.location}"
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_arflw_rg.name}"
-  storage_account_type = "Standard_LRS"
+  storage_account_type = "Premium_LRS"
   create_option = "Empty"
   disk_size_gb = 1024
 }
@@ -339,7 +339,7 @@ resource "azurerm_virtual_machine_extension" "itds_shrd_srv_arflw_nd_03_vm_ext" 
 
   settings = <<SETTINGS
     {
-        "commandToExecute": "sudo apt-get update && sudo apt-get install docker-ce  "
+        "commandToExecute": "hostname && uptime"
     }
 SETTINGS
 }

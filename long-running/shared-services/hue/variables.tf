@@ -26,3 +26,4 @@ variable "shrd_srv_hue_nd_02_stat_ip_addr" {}
 
 variable "shrd_srv_hue_nd_03_stat_ip_addr" {}
 
+variable "shrd-srv-hue-nd-vm-sz" {}
