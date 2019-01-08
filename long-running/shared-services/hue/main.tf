@@ -100,7 +100,7 @@ resource "azurerm_virtual_machine" "itds_shrd_srv_hue_nd_01_vm" {
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_hue_rg.name}"
   network_interface_ids = [
     "${azurerm_network_interface.itds_shrd_srv_hue_nd_01_nic.id}"]
-  vm_size = "Premium_LRS"
+  vm_size = "${var.shrd-srv-hue-nd-vm-sz}"
   availability_set_id = "${azurerm_availability_set.itds_shrd_srv_hue_aset.id}"
   delete_os_disk_on_termination = true
 
@@ -115,7 +115,7 @@ resource "azurerm_virtual_machine" "itds_shrd_srv_hue_nd_01_vm" {
     name = "${var.env_prefix_hypon}-shrd-srv-hue-nd-01-vm-dsk"
     caching = "ReadWrite"
     create_option = "FromImage"
-    managed_disk_type = "Premium_LRS"
+    managed_disk_type = "Standard_LRS"
   }
 
   os_profile {

@@ -171,7 +171,7 @@ resource "azurerm_network_interface" "itds_shrd_srv_isftp_nd_02_nic" {
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_isftp_rg.name}"
 
   ip_configuration {
-    name = "${var.env_prefix_hypon}_shrd_srv_isftp_nd_02_ip_conf"
+    name = "${var.env_prefix_hypon}-shrd-srv-isftp-nd-02-ip-conf"
     subnet_id = "${azurerm_subnet.itds_shrd_srv_isftp_snet.id}"
     private_ip_address_allocation = "static"
     private_ip_address = "${var.shrd_srv_isftp_nd_02_stat_ip_addr}"

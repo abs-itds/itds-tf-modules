@@ -171,7 +171,7 @@ resource "azurerm_network_interface" "itds_shrd_srv_xsftp_nd_02_nic" {
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_xsftp_rg.name}"
 
   ip_configuration {
-    name = "${var.env_prefix_hypon}_shrd_srv_xsftp_nd_02_ip_conf"
+    name = "${var.env_prefix_hypon}-shrd-srv-xsftp-nd-02-ip-conf"
     subnet_id = "${azurerm_subnet.itds_shrd_srv_xsftp_snet.id}"
     private_ip_address_allocation = "static"
     private_ip_address = "${var.shrd_srv_xsftp_nd_02_stat_ip_addr}"
@@ -179,7 +179,7 @@ resource "azurerm_network_interface" "itds_shrd_srv_xsftp_nd_02_nic" {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "itds_shrd_srv_xsftp_nd_02_nic_lb_addr_pl_asso" {
-  ip_configuration_name = "${var.env_prefix_hypon}_shrd_srv_xsftp_nd_02_ip_conf"
+  ip_configuration_name = "${var.env_prefix_hypon}-shrd-srv-xsftp-nd-02-ip-conf"
   network_interface_id = "${azurerm_network_interface.itds_shrd_srv_xsftp_nd_02_nic.id}"
   backend_address_pool_id = "${azurerm_lb_backend_address_pool.itds_shrd_srv_xsftp_lb_addr_pl.id}"
 }
@@ -269,7 +269,7 @@ resource "azurerm_network_interface" "itds_shrd_srv_xsftp_nd_03_nic" {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "itds_shrd_srv_xsftp_nd_03_nic_lb_addr_pl_asso" {
-  ip_configuration_name = "${var.env_prefix_hypon}_shrd_srv_xsftp_nd_03_ip_conf"
+  ip_configuration_name = "${var.env_prefix_hypon}-shrd-srv-xsftp-nd-03-ip-conf"
   network_interface_id = "${azurerm_network_interface.itds_shrd_srv_xsftp_nd_03_nic.id}"
   backend_address_pool_id = "${azurerm_lb_backend_address_pool.itds_shrd_srv_xsftp_lb_addr_pl.id}"
 }
