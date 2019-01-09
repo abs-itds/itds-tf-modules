@@ -39,3 +39,13 @@ resource "azurerm_subnet_network_security_group_association" "itds_hdi_kfka_snet
   subnet_id = "${azurerm_subnet.itds_hdi_kfka_snet.id}"
   network_security_group_id = "${azurerm_network_security_group.itds_hdi_kfka_nsg.id}"
 }
+
+"az hdinsight create --name ${var.env_prefix_hypon}-itds-hdi-kfka  --resource-group ${azurerm_resource_group.itds_hdi_kfka_rg.name} --location ${azurerm_resource_group.itds_hdi_kfka_rg.location} "
+
+
+provisioner "local-exec" {
+  command = "az extension add --name storage-preview && az storage account create --name ${var.shsrv_sa} --resource-group ${azurerm_resource_group.itds_rg.name} --kind StorageV2 --hierarchical-namespace --https-only true --assign-identity --sku Standard_LRS"
+}
+
+
+

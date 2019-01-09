@@ -14,4 +14,12 @@ variable "vnet_end_ip" {}
 
 variable "vnet_address_space" {}
 
-variable "shsrv_sa" {}
+variable "shrd_srv_demo1_snet_addr_pfx" {}
+
+variable "shrd_srv_demo1_nd_01_stat_ip_addr" {}
+
+variable "shrd_srv_demo1_nd_adm"{}
+
+variable "shrd_srv_demo1_nd_pswd" {}
+
+variable "shrd-srv-demo1-nd-vm-sz" {}
