@@ -1,0 +1,99 @@
+{
+  "id": "/subscriptions/f0a049d7-bb54-4698-89a3-04b140a152c0/resourceGroups/itds-dev-wus-hdi-kfka-rg/providers/Microsoft.HDInsight/clusters/itds-dev-wus-hdi-kfka",
+  "name": "itds-dev-wus-hdi-kfka",
+  "type": "Microsoft.HDInsight/clusters",
+  "location": "West US",
+  "etag": "b1359a98-b58d-4e69-82c3-8300b6b11f2f",
+  "tags": {
+    "admins": "dadam47,ashin14",
+    "environment": "Dev",
+    "group": "ITDS"
+  },
+  "properties": {
+    "clusterVersion": "3.6.1000.67",
+    "clusterHdpVersion": "",
+    "osType": "Linux",
+    "clusterDefinition": {
+      "blueprint": "https://blueprints.azurehdinsight.net/kafka-3.6.1000.67.1812120705.json",
+      "kind": "kafka",
+      "componentVersion": {
+        "kafka": "1.1"
+      }
+    },
+    "computeProfile": {
+      "roles": [
+        {
+          "name": "headnode",
+          "targetInstanceCount": 2,
+          "hardwareProfile": {
+            "vmSize": "Standard_D4"
+          },
+          "osProfile": {
+            "linuxOperatingSystemProfile": {
+              "username": "itdsdevwusadminssh"
+            }
+          },
+          "virtualNetworkProfile": {
+            "id": "/subscriptions/f0a049d7-bb54-4698-89a3-04b140a152c0/resourceGroups/Abs-ITDS-Dev/providers/Microsoft.Network/virtualNetworks/Abs-ITDS-Dev",
+            "subnet": "/subscriptions/f0a049d7-bb54-4698-89a3-04b140a152c0/resourceGroups/Abs-ITDS-Dev/providers/Microsoft.Network/virtualNetworks/Abs-ITDS-Dev/subnets/itds-dev-wus-hdi-kfka-snet"
+          },
+          "encryptDataDisks": false
+        },
+        {
+          "name": "workernode",
+          "targetInstanceCount": 3,
+          "hardwareProfile": {
+            "vmSize": "Standard_D4"
+          },
+          "osProfile": {
+            "linuxOperatingSystemProfile": {
+              "username": "itdsdevwusadminssh"
+            }
+          },
+          "virtualNetworkProfile": {
+            "id": "/subscriptions/f0a049d7-bb54-4698-89a3-04b140a152c0/resourceGroups/Abs-ITDS-Dev/providers/Microsoft.Network/virtualNetworks/Abs-ITDS-Dev",
+            "subnet": "/subscriptions/f0a049d7-bb54-4698-89a3-04b140a152c0/resourceGroups/Abs-ITDS-Dev/providers/Microsoft.Network/virtualNetworks/Abs-ITDS-Dev/subnets/itds-dev-wus-hdi-kfka-snet"
+          },
+          "dataDisksGroups": [
+            {
+              "disksPerNode": 1,
+              "storageAccountType": "Standard_LRS",
+              "diskSizeGB": 1023
+            }
+          ],
+          "encryptDataDisks": false
+        },
+        {
+          "name": "zookeepernode",
+          "targetInstanceCount": 3,
+          "hardwareProfile": {
+            "vmSize": "Standard_D2"
+          },
+          "osProfile": {
+            "linuxOperatingSystemProfile": {
+              "username": "itdsdevwusadminssh"
+            }
+          },
+          "virtualNetworkProfile": {
+            "id": "/subscriptions/f0a049d7-bb54-4698-89a3-04b140a152c0/resourceGroups/Abs-ITDS-Dev/providers/Microsoft.Network/virtualNetworks/Abs-ITDS-Dev",
+            "subnet": "/subscriptions/f0a049d7-bb54-4698-89a3-04b140a152c0/resourceGroups/Abs-ITDS-Dev/providers/Microsoft.Network/virtualNetworks/Abs-ITDS-Dev/subnets/itds-dev-wus-hdi-kfka-snet"
+          },
+          "encryptDataDisks": false
+        }
+      ]
+    },
+    "provisioningState": "Failed",
+    "clusterState": "Error",
+    "createdDate": "2019-01-10T06:03:19.4",
+    "quotaInfo": {
+      "coresUsed": 46
+    },
+    "errors": [
+      {
+        "code": "FailedToValidateStorageAccountErrorCode",
+        "message": "Failed to validate the storage account."
+      }
+    ],
+    "tier": "premium"
+  }
+}
