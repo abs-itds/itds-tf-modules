@@ -9,6 +9,23 @@ resource "azurerm_resource_group" "itds_prob_rg" {
   location = "${var.env_location}"
 }
 
+data "template_file" "itds_prob_tf" {
+  template = "${file("${path.module}/cloud-init.yml")}"
+  vars {
+    sftp_stge_in_usr = "${var.sftp_stge_in_usr}"
+    sftp_stge_out_usr = "${var.sftp_stge_out_usr}"
+    sftp_stge_in_usr_pwd = "${var.sftp_stge_in_usr_pwd}"
+    sftp_stge_out_usr_pwd = "${var.sftp_stge_out_usr_pwd}"
+  }
+}
+
+data "template_cloudinit_config" "itds_prob_cinit_conf" {
+  part {
+    content_type = "text/cloud-config"
+    content = "${data.template_file.itds_prob_tf.rendered}"
+  }
+}
+
 resource "azurerm_network_security_group" "itds_prob_nsg" {
   name = "${var.env_prefix_hypon}-prob-nsg"
   resource_group_name = "${azurerm_resource_group.itds_prob_rg.name}"
@@ -22,7 +39,7 @@ resource "azurerm_network_security_group" "itds_prob_nsg" {
     protocol = "Tcp"
     source_port_range = "*"
     destination_port_range = "*"
-    source_address_prefix = "${var.vnet_address_space}"
+    source_address_prefix = "*"
     destination_address_prefix = "*"
   }
 
@@ -45,7 +62,7 @@ resource "azurerm_public_ip" "itds_prob_pip" {
   name = "${var.env_prefix_hypon}-prob-pip"
   location = "${azurerm_resource_group.itds_prob_rg.location}"
   resource_group_name = "${azurerm_resource_group.itds_prob_rg.name}"
-  public_ip_address_allocation = "static"
+  allocation_method = "Static"
 }
 
 resource "azurerm_lb" "itds_prob_lb" {
@@ -54,9 +71,26 @@ resource "azurerm_lb" "itds_prob_lb" {
   resource_group_name = "${azurerm_resource_group.itds_prob_rg.name}"
 
   frontend_ip_configuration {
-    name = "${var.env_prefix_hypon}-prob-lb-pip"
+    name = "${var.env_prefix_hypon}-prob-lb-fic"
     public_ip_address_id = "${azurerm_public_ip.itds_prob_pip.id}"
   }
+}
+
+resource "azurerm_lb_probe" "itds_shrd_srv_xsftp_lb_prb" {
+  resource_group_name = "${azurerm_resource_group.itds_prob_rg.name}"
+  loadbalancer_id     = "${azurerm_lb.itds_prob_lb.id}"
+  name                = "shrd-srv-xsftp-lb-ssh-port-prb"
+  port                = 22
+}
+
+resource "azurerm_lb_rule" "itds_shrd_srv_xsftp_lb_rl" {
+  resource_group_name            = "${azurerm_resource_group.itds_prob_rg.name}"
+  loadbalancer_id                = "${azurerm_lb.itds_prob_lb.id}"
+  name                           = "${var.env_prefix_hypon}-shrd-srv-xsftp-lb-rl"
+  protocol                       = "Tcp"
+  frontend_port                  = 22
+  backend_port                   = 22
+  frontend_ip_configuration_name = "${var.env_prefix_hypon}-prob-lb-fic"
 }
 
 resource "azurerm_lb_backend_address_pool" "itds_prob_lb_addr_pl" {
@@ -121,7 +155,7 @@ resource "azurerm_virtual_machine" "itds_prob_nd_01_vm" {
     computer_name = "${var.env_prefix_hypon}-prob-nd-01-vm"
     admin_username = "${var.prob_nd_adm}"
     admin_password = "${var.prob_nd_pswd}"
-    #custom_data = "${data.template_cloudinit_config.itds_prob_nd_vm_init_srpt_cfg}"
+    custom_data = "${data.template_cloudinit_config.itds_prob_cinit_conf.rendered}"
   }
 
   os_profile_linux_config {
@@ -143,21 +177,4 @@ resource "azurerm_virtual_machine_data_disk_attachment" "itds_prob_nd_01_dsk_att
   virtual_machine_id = "${azurerm_virtual_machine.itds_prob_nd_01_vm.id}"
   lun = "10"
   caching = "ReadWrite"
-}
-
-
-resource "azurerm_virtual_machine_extension" "itds_prob_nd_01_vm_ext" {
-  name = "${var.env_prefix_hypon}-prob-nd-01-vm-ext"
-  location = "${azurerm_resource_group.itds_prob_rg.location}"
-  resource_group_name = "${azurerm_resource_group.itds_prob_rg.name}"
-  virtual_machine_name = "${azurerm_virtual_machine.itds_prob_nd_01_vm.name}"
-  publisher = "Microsoft.Azure.Extensions"
-  type = "CustomScript"
-  type_handler_version = "2.0"
-
-  settings = <<SETTINGS
-    {
-        "commandToExecute": "hostname && uptime"
-    }
-SETTINGS
 }

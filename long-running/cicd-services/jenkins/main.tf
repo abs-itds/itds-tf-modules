@@ -17,8 +17,6 @@ data "template_file" "itds_shrd_srv_jnkns_cint_scpt" {
   }
 }
 
-# Render a multi-part cloudinit config making use of the part
-# above, and other source files
 data "template_cloudinit_config" "itds_shrd_srv_jnkns_cint_conf" {
   part {
     content_type = "text/cloud-config"
@@ -114,6 +112,27 @@ resource "azurerm_network_interface_backend_address_pool_association" "itds_shrd
   backend_address_pool_id = "${azurerm_lb_backend_address_pool.itds_shrd_srv_jnkns_lb_addr_pl.id}"
 }
 
+resource "azurerm_lb_probe" "itds_shrd_srv_jnkns_ssh_prb" {
+  resource_group_name = "${azurerm_resource_group.itds_shrd_srv_artif_rg.name}"
+  loadbalancer_id     = "${azurerm_lb.itds_shrd_srv_jnkns.id}"
+  name                = "shrd-srv-artif-lb-ssh-port-prb"
+  port                = 22
+}
+
+resource "azurerm_lb_rule" "itds_shrd_srv_jnkns_ssh_rl" {
+  resource_group_name            = "${azurerm_resource_group.itds_shrd_srv_artif_rg.name}"
+  loadbalancer_id                = "${azurerm_lb.itds_shrd_srv_jnkns.id}"
+  name                           = "${var.env_prefix_hypon}-shrd-srv-artif-lb-ssh-rl"
+  protocol                       = "Tcp"
+  frontend_port                  = 22
+  backend_port                   = 22
+  frontend_ip_configuration_name = "${var.env_prefix_hypon}-shrd-srv-artif-lb-fic"
+  backend_address_pool_id = "${azurerm_lb_backend_address_pool.itds_shrd_srv_jnkns_addr_pl.id}"
+  probe_id = "${azurerm_lb_probe.itds_shrd_srv_jnkns_ssh_prb.id}"
+}
+
+
+
 */
 
 resource "azurerm_virtual_machine" "itds_shrd_srv_jnkns_nd_01_vm" {
@@ -177,12 +196,6 @@ resource "azurerm_virtual_machine_extension" "itds_shrd_srv_jnkns_nd_01_vm_ext" 
   publisher = "Microsoft.Azure.Extensions"
   type = "CustomScript"
   type_handler_version = "2.0"
-
-  settings = <<SETTINGS
-    {
-        "commandToExecute": "hostname && uptime"
-    }
-SETTINGS
 }
 
 /*
@@ -269,12 +282,6 @@ resource "azurerm_virtual_machine_extension" "itds_shrd_srv_jnkns_nd_02_vm_ext" 
   publisher = "Microsoft.Azure.Extensions"
   type = "CustomScript"
   type_handler_version = "2.0"
-
-  settings = <<SETTINGS
-    {
-        "commandToExecute": "hostname && uptime"
-    }
-SETTINGS
 }
 
 
@@ -358,12 +365,5 @@ resource "azurerm_virtual_machine_extension" "itds_shrd_srv_jnkns_nd_03_vm_ext" 
   publisher = "Microsoft.Azure.Extensions"
   type = "CustomScript"
   type_handler_version = "2.0"
-
-  settings = <<SETTINGS
-    {
-        "commandToExecute": "hostname && uptime"
-    }
-SETTINGS
 }
-
 */

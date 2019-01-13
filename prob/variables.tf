@@ -23,3 +23,11 @@ variable "prob_nd_adm"{}
 variable "prob_nd_pswd" {}
 
 variable "prob_nd_vm_sz" {}
+
+variable "sftp_stge_in_usr" {}
+
+variable "sftp_stge_out_usr" {}
+
+variable "sftp_stge_in_usr_pwd" {}
+
+variable "sftp_stge_out_usr_pwd" {}

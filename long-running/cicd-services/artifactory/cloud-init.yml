@@ -1,0 +1,40 @@
+# Update apt database on first boot (run 'apt-get update').
+# Note, if packages are given, or package_upgrade is true, then
+# update will be done independent of this setting.
+package_update: false
+# Upgrade the instance on first boot
+# (ie run apt-get upgrade)
+package_upgrade: true
+
+disk_setup:
+  /dev/sdc:
+    table_type: 'mbr'
+    layout: true
+    overwrite: false
+
+fs_setup:
+  - filesystem: 'ext4'
+    device: '/dev/sdc'
+    overwrite: false
+
+mounts:
+ - [ sdc, /data, "auto", "defaults,nofail", "1", "2" ]
+
+# Install additional packages on first boot
+packages:
+ - git-core
+
+runcmd:
+  - 'sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common'
+  - 'curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -'
+  - 'sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"'
+  - 'sudo apt-get -y update'
+  - 'sudo apt-get -y install docker-ce'
+  - 'sudo docker pull docker.bintray.io/jfrog/artifactory-pro:latest'
+  - 'sudo mkdir -p /data/jfrog/artifactory'
+  - 'sudo useradd -u 1030 artifactory'
+  - 'sudo chown -R artifactory /data/jfrog'
+  - 'sudo docker run --user artifactory:1030 --name artifactory-oss --restart always -d -v /data/jfrog/artifactory:/var/opt/jfrog/artifactory -p 8081:8081 docker.bintray.io/jfrog/artifactory-oss:latest'
+
+
+final_message: "JFrog Artifactory server is finally up, after $UPTIME seconds"

@@ -27,3 +27,11 @@ variable "shrd_srv_xsftp_nd_adm"{}
 variable "shrd_srv_xsftp_nd_pswd" {}
 
 variable "shrd-srv-xsftp-nd-vm-sz" {}
+
+variable "sftp_stge_in_usr" {}
+
+variable "sftp_stge_out_usr" {}
+
+variable "sftp_stge_in_usr_pwd" {}
+
+variable "sftp_stge_out_usr_pwd" {}

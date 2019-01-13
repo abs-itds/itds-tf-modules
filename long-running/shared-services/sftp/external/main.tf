@@ -9,6 +9,24 @@ resource "azurerm_resource_group" "itds_shrd_srv_xsftp_rg" {
   location = "${var.env_location}"
 }
 
+
+data "template_file" "itds_shrd_srv_xsftp_scpt" {
+  template = "${file("${path.module}/cloud-init.yml")}"
+  vars {
+    sftp_stge_in_usr = "${var.sftp_stge_in_usr}"
+    sftp_stge_out_usr = "${var.sftp_stge_out_usr}"
+    sftp_stge_in_usr_pwd = "${var.sftp_stge_in_usr_pwd}"
+    sftp_stge_out_usr_pwd = "${var.sftp_stge_out_usr_pwd}"
+  }
+}
+
+data "template_cloudinit_config" "itds_shrd_srv_xsftp_conf" {
+  part {
+    content_type = "text/cloud-config"
+    content = "${data.template_file.itds_shrd_srv_xsftp_scpt.rendered}"
+  }
+}
+
 resource "azurerm_network_security_group" "itds_shrd_srv_xsftp_nsg" {
   name = "${var.env_prefix_hypon}-shrd-srv-xsftp-nsg"
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_xsftp_rg.name}"
@@ -22,7 +40,7 @@ resource "azurerm_network_security_group" "itds_shrd_srv_xsftp_nsg" {
     protocol = "Tcp"
     source_port_range = "*"
     destination_port_range = "*"
-    source_address_prefix = "${var.vnet_address_space}"
+    source_address_prefix = "*"
     destination_address_prefix = "*"
   }
 
@@ -45,7 +63,7 @@ resource "azurerm_public_ip" "itds_shrd_srv_xsftp_pip" {
   name = "${var.env_prefix_hypon}-shrd-srv-xsftp-pip"
   location = "${azurerm_resource_group.itds_shrd_srv_xsftp_rg.location}"
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_xsftp_rg.name}"
-  public_ip_address_allocation = "static"
+  allocation_method = "Static"
 }
 
 resource "azurerm_lb" "itds_shrd_srv_xsftp_lb" {
@@ -54,9 +72,26 @@ resource "azurerm_lb" "itds_shrd_srv_xsftp_lb" {
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_xsftp_rg.name}"
 
   frontend_ip_configuration {
-    name = "${var.env_prefix_hypon}-shrd-srv-xsftp-lb-pip"
+    name = "${var.env_prefix_hypon}-shrd-srv-xsftp-lb-fic"
     public_ip_address_id = "${azurerm_public_ip.itds_shrd_srv_xsftp_pip.id}"
   }
+}
+
+resource "azurerm_lb_probe" "itds_shrd_srv_xsftp_lb_prb" {
+  resource_group_name = "${azurerm_resource_group.itds_shrd_srv_xsftp_rg.name}"
+  loadbalancer_id     = "${azurerm_lb.itds_shrd_srv_xsftp_lb.id}"
+  name                = "shrd-srv-xsftp-lb-ssh-port-prb"
+  port                = 2222
+}
+
+resource "azurerm_lb_rule" "itds_shrd_srv_xsftp_lb_rl" {
+  resource_group_name            = "${azurerm_resource_group.itds_shrd_srv_xsftp_rg.name}"
+  loadbalancer_id                = "${azurerm_lb.itds_shrd_srv_xsftp_lb.id}"
+  name                           = "${var.env_prefix_hypon}-shrd-srv-xsftp-lb-rl"
+  protocol                       = "Tcp"
+  frontend_port                  = 2222
+  backend_port                   = 2222
+  frontend_ip_configuration_name = "${var.env_prefix_hypon}-shrd-srv-xsftp-lb-fic"
 }
 
 resource "azurerm_lb_backend_address_pool" "itds_shrd_srv_xsftp_lb_addr_pl" {
@@ -121,7 +156,7 @@ resource "azurerm_virtual_machine" "itds_shrd_srv_xsftp_nd_01_vm" {
     computer_name = "${var.env_prefix_hypon}-shrd-srv-xsftp-nd-01-vm"
     admin_username = "${var.shrd_srv_xsftp_nd_adm}"
     admin_password = "${var.shrd_srv_xsftp_nd_pswd}"
-    #custom_data = "${data.template_cloudinit_config.itds_shrd_srv_xsftp_nd_vm_init_srpt_cfg}"
+    custom_data = "${data.template_cloudinit_config.itds_shrd_srv_xsftp_conf.rendered}"
   }
 
   os_profile_linux_config {
@@ -154,17 +189,10 @@ resource "azurerm_virtual_machine_extension" "itds_shrd_srv_xsftp_nd_01_vm_ext" 
   publisher = "Microsoft.Azure.Extensions"
   type = "CustomScript"
   type_handler_version = "2.0"
-
-  settings = <<SETTINGS
-    {
-        "commandToExecute": "hostname && uptime"
-    }
-SETTINGS
 }
 
 
 # Node 02
-
 resource "azurerm_network_interface" "itds_shrd_srv_xsftp_nd_02_nic" {
   name = "${var.env_prefix_hypon}-shrd-srv-xsftp-nd-02-nic"
   location = "${azurerm_resource_group.itds_shrd_srv_xsftp_rg.location}"
@@ -213,7 +241,7 @@ resource "azurerm_virtual_machine" "itds_shrd_srv_xsftp_nd_02_vm" {
     computer_name = "${var.env_prefix_hypon}-shrd-srv-xsftp-nd-02-vm"
     admin_username = "${var.shrd_srv_xsftp_nd_adm}"
     admin_password = "${var.shrd_srv_xsftp_nd_pswd}"
-    #custom_data = ""
+    custom_data = "${data.template_cloudinit_config.itds_shrd_srv_xsftp_conf.rendered}"
   }
 
   os_profile_linux_config {
@@ -246,12 +274,6 @@ resource "azurerm_virtual_machine_extension" "itds_shrd_srv_xsftp_nd_02_vm_ext" 
   publisher = "Microsoft.Azure.Extensions"
   type = "CustomScript"
   type_handler_version = "2.0"
-
-  settings = <<SETTINGS
-    {
-        "commandToExecute": "hostname && uptime"
-    }
-SETTINGS
 }
 
 
@@ -304,7 +326,7 @@ resource "azurerm_virtual_machine" "itds_shrd_srv_xsftp_nd_03_vm" {
     computer_name = "${var.env_prefix_hypon}-shrd-srv-xsftp-nd-03-vm"
     admin_username = "${var.shrd_srv_xsftp_nd_adm}"
     admin_password = "${var.shrd_srv_xsftp_nd_pswd}"
-    #custom_data = ""
+    custom_data = "${data.template_cloudinit_config.itds_shrd_srv_xsftp_conf.rendered}"
   }
 
   os_profile_linux_config {
@@ -337,10 +359,4 @@ resource "azurerm_virtual_machine_extension" "itds_shrd_srv_xsftp_nd_03_vm_ext" 
   publisher = "Microsoft.Azure.Extensions"
   type = "CustomScript"
   type_handler_version = "2.0"
-
-  settings = <<SETTINGS
-    {
-        "commandToExecute": "hostname && uptime"
-    }
-SETTINGS
 }

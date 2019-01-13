@@ -1,0 +1,67 @@
+# Update apt database on first boot (run 'apt-get update').
+# Note, if packages are given, or package_upgrade is true, then
+# update will be done independent of this setting.
+package_update: false
+# Upgrade the instance on first boot
+# (ie run apt-get upgrade)
+package_upgrade: true
+
+disk_setup:
+  /dev/sdc:
+    table_type: 'mbr'
+    layout: true
+    overwrite: false
+
+fs_setup:
+  - filesystem: 'ext4'
+    device: '/dev/sdc'
+    overwrite: false
+
+mounts:
+ - [ sdc, /data, "auto", "defaults,nofail", "1", "2" ]
+
+
+/*
+groups:
+  - sftp
+
+users:
+  - name: ${sftp_stge_in_usr}
+    gecos: SFTP In User
+    primary_group: sftp
+    passwd: ${sha512("${sftp_stge_in_usr_pwd}")}
+  - name: ${sftp_stge_out_usr}
+    gecos: SFTP Out User
+    primary_group: sftp
+    passwd: ${sha512("${sftp_stge_out_usr_pwd}")}
+*/
+
+# Install additional packages on first boot
+packages:
+ - git-core
+
+write_files:
+  - content: |
+      ${sftp_stge_in_usr}:${sftp_stge_in_usr_pwd}:1010:100
+      ${sftp_stge_out_usr}:${sftp_stge_out_usr_pwd}:1011:100
+    owner: root:root
+    path: /data/users.conf
+    permissions: '0644'
+
+runcmd:
+  - 'sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common'
+  - 'curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -'
+  - 'sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"'
+  - 'sudo apt-get -y update'
+  - 'sudo apt-get -y install docker-ce'
+  - 'sudo docker pull atmoz/sftp'
+  - 'sudo mkdir -p /data/sftp/stage/in'
+  - 'sudo mkdir -p /data/sftp/stage/out'
+  - 'sudo chown -R root /data/jenkins'
+  - 'sudo docker run -u root --restart always -d -p 2222:22 -v /data/users.conf:/etc/sftp/users.conf:ro -v /data/sftp/stage/in:/home/${sftp_stge_in_usr} -v /data/sftp/stage/out:/home/${sftp_stge_out_usr}:ro  -v /var/run/docker.sock:/var/run/docker.sock atmoz/sftp'
+
+# final_message
+# default: cloud-init boot finished at $TIMESTAMP. Up $UPTIME seconds
+# this message is written by cloud-final when the system is finished
+# its first boot
+final_message: "SFTP server is finally up, after $UPTIME seconds"

@@ -1,0 +1,66 @@
+package_update: false
+
+package_upgrade: true
+
+disk_setup:
+  /dev/sdc:
+    table_type: 'mbr'
+    layout: true
+    overwrite: false
+
+fs_setup:
+  - filesystem: 'ext4'
+    device: '/dev/sdc'
+    overwrite: false
+
+mounts:
+  - [ sdc, /data, "auto", "defaults,nofail", "1", "2" ]
+
+groups:
+  - xsftp
+  - isftp
+
+users:
+  - name: ${sftp_stge_in_usr}
+    gecos: SFTP In User
+    primary_group: isftp
+    passwd: ${sha512("${sftp_stge_in_usr_pwd}")}
+    homedir: /data/sftp/stage/in
+    shell: /bin/false
+  - name: ${sftp_stge_out_usr}
+    gecos: SFTP Out User
+    primary_group: xsftp
+    passwd: ${sha512("${sftp_stge_out_usr_pwd}")}
+    homedir: /data/sftp/stage/out
+    shell: /bin/false
+
+write_files:
+  - content: |
+      Subsystem sftp internal-sftp
+      Match Group isftp
+          PasswordAuthentication yes
+          ChrootDirectory /data/sftp/stage/in
+          AllowTCPForwarding no
+          X11Forwarding no
+          ForceCommand internal-sftp
+      Match Group osftp
+          PasswordAuthentication yes
+          ChrootDirectory /data/sftp/stage/out
+          AllowTCPForwarding no
+          X11Forwarding no
+          ForceCommand internal-sftp
+    owner: root:root
+    path: /data/sshd_config
+    permissions: '0644'
+  - content: |
+      session optional pam_umask.so umask=0400
+    owner: root:root
+    path: /data/sshd
+    permissions: '0644'
+
+runcmd:
+  - 'sudo mkdir -p /data/sftp/stage/in'
+  - 'sudo chown -R isftp:${sftp_stge_in_usr} /data/sftp/stage/in'
+  - 'sudo mkdir -p /data/sftp/stage/out'
+  - 'sudo chown -R osftp:${sftp_stge_out_usr} /data/sftp/stage/out'
+  - 'sudo /etc/init.d/ssh restart'
