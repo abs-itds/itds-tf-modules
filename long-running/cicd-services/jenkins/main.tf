@@ -9,6 +9,23 @@ resource "azurerm_resource_group" "itds_shrd_srv_jnkns_rg" {
   location = "${var.env_location}"
 }
 
+data "template_file" "itds_shrd_srv_jnkns_cint_scpt" {
+  template = "${file("${path.module}/cloud-init.yml")}"
+  vars {
+    git_repo_url = "${var.shrd_srv_jnkns_prj_git_url}"
+    docker_usr = "${var.shrd_srv_jnkns_nd_adm}"
+  }
+}
+
+# Render a multi-part cloudinit config making use of the part
+# above, and other source files
+data "template_cloudinit_config" "itds_shrd_srv_jnkns_cint_conf" {
+  part {
+    content_type = "text/cloud-config"
+    content = "${data.template_file.itds_shrd_srv_jnkns_cint_scpt.rendered}"
+  }
+}
+
 resource "azurerm_network_security_group" "itds_shrd_srv_jnkns_nsg" {
   name = "${var.env_prefix_hypon}-shrd-srv-jnkns-nsg"
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_jnkns_rg.name}"
@@ -21,8 +38,9 @@ resource "azurerm_network_security_group" "itds_shrd_srv_jnkns_nsg" {
     access = "Allow"
     protocol = "Tcp"
     source_port_range = "*"
-    destination_port_range = "22"
-    source_address_prefix = "${var.vnet_address_space}"
+    destination_port_range = "*"
+    source_address_prefix = "*"
+    #source_address_prefix = "${var.vnet_address_space}"
     destination_address_prefix = "*"
   }
 
@@ -45,16 +63,17 @@ resource "azurerm_public_ip" "itds_shrd_srv_jnkns_pip" {
   name = "${var.env_prefix_hypon}-shrd-srv-jnkns-pip"
   location = "${azurerm_resource_group.itds_shrd_srv_jnkns_rg.location}"
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_jnkns_rg.name}"
-  public_ip_address_allocation = "static"
+  allocation_method = "Static"
 }
 
+/*
 resource "azurerm_lb" "itds_shrd_srv_jnkns_lb" {
   name = "${var.env_prefix_hypon}-shrd-srv-jnkns-lb"
   location = "${azurerm_resource_group.itds_shrd_srv_jnkns_rg.location}"
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_jnkns_rg.name}"
 
   frontend_ip_configuration {
-    name = "${var.env_prefix_hypon}-shrd-srv-jnkns-lb-pip}"
+    name = "${var.env_prefix_hypon}-shrd-srv-jnkns-lb-pip"
     public_ip_address_id = "${azurerm_public_ip.itds_shrd_srv_jnkns_pip.id}"
   }
 }
@@ -64,7 +83,7 @@ resource "azurerm_lb_backend_address_pool" "itds_shrd_srv_jnkns_lb_addr_pl" {
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_jnkns_rg.name}"
   loadbalancer_id = "${azurerm_lb.itds_shrd_srv_jnkns_lb.id}"
 }
-
+*/
 
 resource "azurerm_availability_set" "itds_shrd_srv_jnkns_aset" {
   name = "${var.env_prefix_hypon}-shrd-srv-jnkns-aset"
@@ -84,15 +103,18 @@ resource "azurerm_network_interface" "itds_shrd_srv_jnkns_nd_01_nic" {
     subnet_id = "${azurerm_subnet.itds_shrd_srv_jnkns_snet.id}"
     private_ip_address_allocation = "static"
     private_ip_address = "${var.shrd_srv_jnkns_nd_01_stat_ip_addr}"
+    public_ip_address_id = "${azurerm_public_ip.itds_shrd_srv_jnkns_pip.id}"
   }
 }
 
+/*
 resource "azurerm_network_interface_backend_address_pool_association" "itds_shrd_srv_jnkns_nd_01_nic_lb_addr_pl_asso" {
   ip_configuration_name = "${var.env_prefix_hypon}-shrd-srv-jnkns-nic-lb-addr-pl-asso"
   network_interface_id = "${azurerm_network_interface.itds_shrd_srv_jnkns_nd_01_nic.id}"
   backend_address_pool_id = "${azurerm_lb_backend_address_pool.itds_shrd_srv_jnkns_lb_addr_pl.id}"
 }
 
+*/
 
 resource "azurerm_virtual_machine" "itds_shrd_srv_jnkns_nd_01_vm" {
   name = "${var.env_prefix_hypon}-shrd-srv-jnkns-nd-01-vm"
@@ -119,10 +141,10 @@ resource "azurerm_virtual_machine" "itds_shrd_srv_jnkns_nd_01_vm" {
   }
 
   os_profile {
-    computer_name = "${var.env_prefix_underscore}_shrd_srv_jnkns_nd_01_vm"
+    computer_name = "${var.env_prefix_hypon}-shrd-srv-jnkns-nd-01-vm"
     admin_username = "${var.shrd_srv_jnkns_nd_adm}"
     admin_password = "${var.shrd_srv_jnkns_nd_pswd}"
-    #custom_data = ""
+    custom_data = "${data.template_cloudinit_config.itds_shrd_srv_jnkns_cint_conf.rendered}"
   }
 
   os_profile_linux_config {
@@ -163,9 +185,9 @@ resource "azurerm_virtual_machine_extension" "itds_shrd_srv_jnkns_nd_01_vm_ext" 
 SETTINGS
 }
 
+/*
 
 # Node 02
-
 resource "azurerm_network_interface" "itds_shrd_srv_jnkns_nd_02_nic" {
   name = "${var.env_prefix_hypon}-shrd-srv-jnkns-nd-02-nic"
   location = "${azurerm_resource_group.itds_shrd_srv_jnkns_rg.location}"
@@ -211,7 +233,7 @@ resource "azurerm_virtual_machine" "itds_shrd_srv_jnkns_nd_02_vm" {
   }
 
   os_profile {
-    computer_name = "${var.env_prefix_underscore}_shrd_srv_jnkns_nd_02_vm"
+    computer_name = "${var.env_prefix_hypon}-shrd-srv-jnkns-nd-02-vm"
     admin_username = "${var.shrd_srv_jnkns_nd_adm}"
     admin_password = "${var.shrd_srv_jnkns_nd_pswd}"
     #custom_data = ""
@@ -301,7 +323,7 @@ resource "azurerm_virtual_machine" "itds_shrd_srv_jnkns_nd_03_vm" {
   }
 
   os_profile {
-    computer_name = "${var.env_prefix_underscore}_shrd_srv_jnkns_nd_03_vm"
+    computer_name = "${var.env_prefix_hypon}-shrd-srv-jnkns-nd-03-vm"
     admin_username = "${var.shrd_srv_jnkns_nd_adm}"
     admin_password = "${var.shrd_srv_jnkns_nd_pswd}"
     #custom_data = ""
@@ -343,3 +365,5 @@ resource "azurerm_virtual_machine_extension" "itds_shrd_srv_jnkns_nd_03_vm_ext" 
     }
 SETTINGS
 }
+
+*/
