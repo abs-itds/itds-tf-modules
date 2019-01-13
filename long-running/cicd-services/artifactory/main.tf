@@ -129,16 +129,16 @@ resource "azurerm_network_interface" "itds_shrd_srv_artif_vm_nic" {
     name = "${var.env_prefix_hypon}-shrd-srv-artif-vm-${count.index}-ipc"
     subnet_id = "${azurerm_subnet.itds_shrd_srv_artif_snet.id}"
     private_ip_address_allocation = "static"
-    private_ip_address = "${element(var.itds_shrd_srv_artif_vm_ip, count.index)}"
+    private_ip_address = "${element(var.shrd_srv_artif_vm_ip, count.index)}"
   }
-  count = "${length(var.itds_shrd_srv_artif_vm_ip)}"
+  count = "${length(var.shrd_srv_artif_vm_ip)}"
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "itds_shrd_srv_artif_vm_nic_lb_addr_pl_asso" {
   ip_configuration_name = "${var.env_prefix_hypon}-shrd-srv-artif-vm-${count.index}-ipc"
   network_interface_id = "${element(azurerm_network_interface.itds_shrd_srv_artif_vm_nic.*.id, count.index)}"
   backend_address_pool_id = "${azurerm_lb_backend_address_pool.itds_shrd_srv_artif_lb_addr_pl.id}"
-  count = "${length(var.itds_shrd_srv_artif_vm_ip)}"
+  count = "${length(var.shrd_srv_artif_vm_ip)}"
 }
 
 resource "azurerm_virtual_machine" "itds_shrd_srv_artif_vm" {
@@ -147,14 +147,14 @@ resource "azurerm_virtual_machine" "itds_shrd_srv_artif_vm" {
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_artif_rg.name}"
   network_interface_ids = [
     "${element(azurerm_network_interface.itds_shrd_srv_artif_vm_nic.*.id, count.index)}"]
-  vm_size = "${var.itds_shrd_srv_artif_vm["vm_size"]}"
+  vm_size = "${var.shrd_srv_artif_vm["vm_size"]}"
   availability_set_id = "${azurerm_availability_set.itds_shrd_srv_artif_aset.id}"
   delete_os_disk_on_termination = false
   storage_image_reference {
-    publisher = "${var.itds_shrd_srv_artif_vm["vm_img_publisher"]}"
-    offer = "${var.itds_shrd_srv_artif_vm["vm_img_offer"]}"
-    sku = "${var.itds_shrd_srv_artif_vm["vm_img_sku"]}"
-    version = "${var.itds_shrd_srv_artif_vm["vm_img_ver"]}"
+    publisher = "${var.shrd_srv_artif_vm["vm_img_publisher"]}"
+    offer = "${var.shrd_srv_artif_vm["vm_img_offer"]}"
+    sku = "${var.shrd_srv_artif_vm["vm_img_sku"]}"
+    version = "${var.shrd_srv_artif_vm["vm_img_ver"]}"
   }
   storage_os_disk {
     name = "${var.env_prefix_hypon}-shrd-srv-artif-vm-${count.index}-os-dsk"
@@ -171,17 +171,17 @@ resource "azurerm_virtual_machine" "itds_shrd_srv_artif_vm" {
   os_profile_linux_config {
     disable_password_authentication = false
   }
-  count = "${length(var.itds_shrd_srv_artif_vm_ip)}"
+  count = "${length(var.shrd_srv_artif_vm_ip)}"
 }
 
 resource "azurerm_managed_disk" "itds_shrd_srv_artif_vm_mg_dsk" {
   name = "${var.env_prefix_hypon}-shrd-srv-artif-vm-${count.index}-mg-dsk"
   location = "${azurerm_resource_group.itds_shrd_srv_artif_rg.location}"
   resource_group_name = "${azurerm_resource_group.itds_shrd_srv_artif_rg.name}"
-  storage_account_type = "${var.itds_shrd_srv_artif_vm["vm_mg_dsk_ty"]}"
+  storage_account_type = "${var.shrd_srv_artif_vm["vm_mg_dsk_ty"]}"
   create_option = "Empty"
-  disk_size_gb = "${var.itds_shrd_srv_artif_vm["vm_mg_dsk_sz"]}"
-  count = "${length(var.itds_shrd_srv_artif_vm_ip)}"
+  disk_size_gb = "${var.shrd_srv_artif_vm["vm_mg_dsk_sz"]}"
+  count = "${length(var.shrd_srv_artif_vm_ip)}"
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "itds_shrd_srv_artif_vm_dsk_attch" {
@@ -189,5 +189,5 @@ resource "azurerm_virtual_machine_data_disk_attachment" "itds_shrd_srv_artif_vm_
   virtual_machine_id = "${element(azurerm_virtual_machine.itds_shrd_srv_artif_vm.*.id, count.index)}"
   lun = "10"
   caching = "ReadWrite"
-  count = "${length(var.itds_shrd_srv_artif_vm_ip)}"
+  count = "${length(var.shrd_srv_artif_vm_ip)}"
 }

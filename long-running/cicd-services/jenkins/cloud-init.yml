@@ -30,7 +30,7 @@ runcmd:
   - 'sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"'
   - 'sudo apt-get -y update'
   - 'sudo apt-get -y install docker-ce'
-  - 'sudo usermod -aG docker `whoami`'
+  - 'sudo usermod -aG docker root'
   - 'sudo docker pull jenkinsci/blueocean'
   - 'sudo mkdir -p /data/jenkins'
   - 'sudo git clone ${git_repo_url} /data/jenkins/home'

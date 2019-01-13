@@ -8,22 +8,58 @@ variable "vnet_name" {}
 
 variable "vnet_rg_name" {}
 
+variable "vnet_address_space" {}
+
 variable "vnet_start_ip" {}
 
 variable "vnet_end_ip" {}
 
-variable "vnet_address_space" {}
-
-variable "shrd_srv_jnkns_nd_adm" {}
-
-variable "shrd_srv_jnkns_nd_pswd" {}
-
 variable "shrd_srv_jnkns_snet_addr_pfx" {}
 
-variable "shrd_srv_jnkns_nd_01_stat_ip_addr" {}
+variable "shrd_srv_jnkns_nsg_ibnd_rl" {
+  type = "list"
+}
 
-variable "shrd_srv_jnkns_nd_02_stat_ip_addr" {}
+variable "shrd_srv_jnkns_nsg_ibnd_rl_src_pfx" {
+  type = "list"
+}
 
-variable "shrd_srv_jnkns_nd_03_stat_ip_addr" {}
+variable "shrd_srv_jnkns_nsg_ibnd_rl_dst_pfx" {
+  type = "list"
+}
 
-variable "shrd_srv_jnkns_prj_git_url" {}
+variable "shrd_srv_jnkns_nsg_obnd_rl" {
+  type = "list"
+}
+
+variable "shrd_srv_jnkns_nsg_obnd_rl_src_pfx" {
+  type = "list"
+}
+
+variable "shrd_srv_jnkns_nsg_obnd_rl_dst_pfx" {
+  type = "list"
+}
+
+variable "shrd_srv_jnkns_lb_prb_prt" {
+  type = "list"
+}
+
+variable "shrd_srv_jnkns_lb_bck_prt" {
+  type = "list"
+}
+
+variable "shrd_srv_jnkns_lb_fnt_prt" {
+  type = "list"
+}
+
+variable "shrd_srv_jnkns_vm_ip" {
+  type = "list"
+}
+
+variable "shrd_srv_jnkns_vm" {
+  type = "map"
+}
+
+variable "shrd_srv_jnkns_vm_adm"{}
+
+variable "shrd_srv_jnkns_vm_pswd" {}
