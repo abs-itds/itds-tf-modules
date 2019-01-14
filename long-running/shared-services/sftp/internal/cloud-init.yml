@@ -30,13 +30,7 @@ runcmd:
   - 'sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"'
   - 'sudo apt-get -y update'
   - 'sudo apt-get -y install docker-ce'
-  - 'sudo usermod -aG docker `whoami`'
-  - 'sudo docker pull jenkinsci/blueocean'
-  - 'sudo mkdir -p /data/jenkins'
-  - 'sudo git clone ${git_repo_url} /data/jenkins/home'
-  - 'sudo chown -R root /data/jenkins'
-  - 'sudo docker run -u root --restart always -d -p 8080:8080 -p 50000:50000 -v /data/jenkins/home:/var/jenkins_home  -v /var/run/docker.sock:/var/run/docker.sock jenkinsci/blueocean'
-
+  - 'sudo docker pull atmoz/sftp'
 
 # final_message
 # default: cloud-init boot finished at $TIMESTAMP. Up $UPTIME seconds

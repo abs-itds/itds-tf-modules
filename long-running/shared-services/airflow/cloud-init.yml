@@ -30,9 +30,10 @@ runcmd:
   - 'sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"'
   - 'sudo apt-get -y update'
   - 'sudo apt-get -y install docker-ce'
+  - 'sudo docker pull puckel/docker-airflow'
 
 # final_message
 # default: cloud-init boot finished at $TIMESTAMP. Up $UPTIME seconds
 # this message is written by cloud-final when the system is finished
 # its first boot
-final_message: "SFTP server is finally up, after $UPTIME seconds"
+final_message: "Airflow server is finally up, after $UPTIME seconds"

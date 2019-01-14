@@ -58,3 +58,5 @@ resource "azurerm_subnet_network_security_group_association" "itds_hdi_kfka_snet
   network_security_group_id = "${azurerm_network_security_group.itds_hdi_kfka_nsg.id}"
 }
 
+
+#HDInsight clusters in the same Virtual Network requires each cluster to have unique first six characters
