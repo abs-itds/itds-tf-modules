@@ -85,9 +85,3 @@ resource "azurerm_policy_assignment" "itds_subs_tag-plcy-asgn-allwd-loc" {
   }
   PARAMETERS
 }
-
-resource "azurerm_resource_group" "itds_subs_rg" {
-  name     = "${var.env_prefix_hypon}-subs-rg"
-  location = "${var.env_location}"
-  depends_on = ["azurerm_management_lock.itds_subs_lk"]
-}

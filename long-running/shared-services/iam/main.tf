@@ -4,12 +4,6 @@ terraform {
 
 data "azurerm_subscription" "current" {}
 
-resource "azurerm_resource_group" "itds_rg" {
-  name     = "${var.env_prefix_hypon}-rg"
-  location = "${var.env_location}"
-}
-
-
 resource "azurerm_role_definition" "itds_iam_dvlpr_rl" {
   name        = "${var.env_prefix_hypon}-iam-dvlpr-rl"
   scope       = "${data.azurerm_subscription.current.id}"

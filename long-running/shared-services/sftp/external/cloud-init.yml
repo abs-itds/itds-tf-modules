@@ -20,33 +20,9 @@ fs_setup:
 mounts:
  - [ sdc, /data, "auto", "defaults,nofail", "1", "2" ]
 
-
-/*
-groups:
-  - sftp
-
-users:
-  - name: ${sftp_stge_in_usr}
-    gecos: SFTP In User
-    primary_group: sftp
-    passwd: ${sha512("${sftp_stge_in_usr_pwd}")}
-  - name: ${sftp_stge_out_usr}
-    gecos: SFTP Out User
-    primary_group: sftp
-    passwd: ${sha512("${sftp_stge_out_usr_pwd}")}
-*/
-
 # Install additional packages on first boot
 packages:
  - git-core
-
-write_files:
-  - content: |
-      ${sftp_stge_in_usr}:${sftp_stge_in_usr_pwd}:1010:100
-      ${sftp_stge_out_usr}:${sftp_stge_out_usr_pwd}:1011:100
-    owner: root:root
-    path: /data/users.conf
-    permissions: '0644'
 
 runcmd:
   - 'sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common'
@@ -54,11 +30,13 @@ runcmd:
   - 'sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"'
   - 'sudo apt-get -y update'
   - 'sudo apt-get -y install docker-ce'
-  - 'sudo docker pull atmoz/sftp'
-  - 'sudo mkdir -p /data/sftp/stage/in'
-  - 'sudo mkdir -p /data/sftp/stage/out'
+  - 'sudo usermod -aG docker `whoami`'
+  - 'sudo docker pull jenkinsci/blueocean'
+  - 'sudo mkdir -p /data/jenkins'
+  - 'sudo git clone ${git_repo_url} /data/jenkins/home'
   - 'sudo chown -R root /data/jenkins'
-  - 'sudo docker run -u root --restart always -d -p 2222:22 -v /data/users.conf:/etc/sftp/users.conf:ro -v /data/sftp/stage/in:/home/${sftp_stge_in_usr} -v /data/sftp/stage/out:/home/${sftp_stge_out_usr}:ro  -v /var/run/docker.sock:/var/run/docker.sock atmoz/sftp'
+  - 'sudo docker run -u root --restart always -d -p 8080:8080 -p 50000:50000 -v /data/jenkins/home:/var/jenkins_home  -v /var/run/docker.sock:/var/run/docker.sock jenkinsci/blueocean'
+
 
 # final_message
 # default: cloud-init boot finished at $TIMESTAMP. Up $UPTIME seconds

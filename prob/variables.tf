@@ -8,26 +8,58 @@ variable "vnet_name" {}
 
 variable "vnet_rg_name" {}
 
+variable "vnet_address_space" {}
+
 variable "vnet_start_ip" {}
 
 variable "vnet_end_ip" {}
 
-variable "vnet_address_space" {}
-
 variable "prob_snet_addr_pfx" {}
 
-variable "prob_nd_01_stat_ip_addr" {}
+variable "prob_nsg_ibnd_rl" {
+  type = "list"
+}
 
-variable "prob_nd_adm"{}
+variable "prob_nsg_ibnd_rl_src_pfx" {
+  type = "list"
+}
 
-variable "prob_nd_pswd" {}
+variable "prob_nsg_ibnd_rl_dst_pfx" {
+  type = "list"
+}
 
-variable "prob_nd_vm_sz" {}
+variable "prob_nsg_obnd_rl" {
+  type = "list"
+}
 
-variable "sftp_stge_in_usr" {}
+variable "prob_nsg_obnd_rl_src_pfx" {
+  type = "list"
+}
 
-variable "sftp_stge_out_usr" {}
+variable "prob_nsg_obnd_rl_dst_pfx" {
+  type = "list"
+}
 
-variable "sftp_stge_in_usr_pwd" {}
+variable "prob_lb_prb_prt" {
+  type = "list"
+}
 
-variable "sftp_stge_out_usr_pwd" {}
+variable "prob_lb_bck_prt" {
+  type = "list"
+}
+
+variable "prob_lb_fnt_prt" {
+  type = "list"
+}
+
+variable "prob_vm_ip" {
+  type = "list"
+}
+
+variable "prob_vm" {
+  type = "map"
+}
+
+variable "prob_vm_adm"{}
+
+variable "prob_vm_pswd" {}
